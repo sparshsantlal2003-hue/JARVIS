@@ -9,7 +9,8 @@ def test_jarvis_identity_instruction():
     # We mock the client to see what it sends
     with patch.object(provider.client.models, 'generate_content') as mock_generate:
         try:
-            provider.generate_response([], 'Who are you?')
+            history = [{"role": "user", "content": "Who are you?"}]
+            provider.generate_response(history)
         except Exception:
             pass # We just care about the mock being called
             
