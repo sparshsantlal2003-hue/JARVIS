@@ -1,6 +1,6 @@
-<div align="center">
+﻿<div align="center">
 
-# ◈ J A R V I S
+# â—ˆ J A R V I S
 
 ### **Just A Rather Very Intelligent System**
 
@@ -20,60 +20,60 @@
 
 ---
 
-## ⚡ What is JARVIS?
+## âš¡ What is JARVIS?
 
 JARVIS is an evolving **desktop AI agent for Windows**. The project started with conversational AI and is being expanded into a practical computer-control system capable of interacting with applications, the filesystem, keyboard/mouse input, and a web browser.
 
 The architecture is intentionally modular:
 
 ```text
-                         ┌──────────────────────┐
-                         │        USER          │
-                         │ "Open Brave..."      │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │       JARVIS         │
-                         │  Agent / Orchestrator│
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │     LLM PROVIDER     │
-                         │  Groq / configurable │
-                         └──────────┬───────────┘
-                                    │
-                         ┌──────────▼───────────┐
-                         │      TOOL REGISTRY   │
-                         └──────┬─────┬─────┬───┘
-                                │     │     │
-                         ┌──────▼┐ ┌──▼───┐ ┌▼────────┐
-                         │Windows│ │Files │ │  Brave  │
-                         │ Tools │ │Tools │ │ Browser │
-                         └──────┘ └──────┘ └─────────┘
+                         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                         â”‚        USER          â”‚
+                         â”‚ "Open Brave..."      â”‚
+                         â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                    â”‚
+                                    â–¼
+                         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                         â”‚       JARVIS         â”‚
+                         â”‚  Agent / Orchestratorâ”‚
+                         â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                    â”‚
+                                    â–¼
+                         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                         â”‚     LLM PROVIDER     â”‚
+                         â”‚  Groq / configurable â”‚
+                         â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                    â”‚
+                         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                         â”‚      TOOL REGISTRY   â”‚
+                         â””â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”˜
+                                â”‚     â”‚     â”‚
+                         â”Œâ”€â”€â”€â”€â”€â”€â–¼â” â”Œâ”€â”€â–¼â”€â”€â”€â” â”Œâ–¼â”€â”€â”€â”€â”€â”€â”€â”€â”
+                         â”‚Windowsâ”‚ â”‚Files â”‚ â”‚  Brave  â”‚
+                         â”‚ Tools â”‚ â”‚Tools â”‚ â”‚ Browser â”‚
+                         â””â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 > **Design principle:** the model decides *what* needs to happen; deterministic tools are responsible for *how* the action is executed and validated.
 
 ---
 
-## ✨ Current Capabilities
+## âœ¨ Current Capabilities
 
-### 🧠 Agent & Conversation
+### ðŸ§  Agent & Conversation
 - Natural-language interaction with JARVIS.
 - Configurable AI-provider layer.
 - Conversation history and agent/tool loop.
 - Structured tool calls and explicit tool results.
 
-### 🖥️ Windows Control
+### ðŸ–¥ï¸ Windows Control
 - Launch desktop applications.
 - Keyboard interaction.
 - Mouse interaction.
 - Controlled filesystem operations.
 - Validation and safety checks around computer actions.
 
-### 🌐 Brave Browser Automation
+### ðŸŒ Brave Browser Automation
 - Launch/reuse Brave.
 - Navigate to websites.
 - Search the web through the browser.
@@ -85,7 +85,7 @@ The architecture is intentionally modular:
 - Keyboard actions such as `Space`, `Enter`, `Escape`, and arrow keys.
 - Multi-step browser workflows.
 
-### 🛡️ Reliability & Safety
+### ðŸ›¡ï¸ Reliability & Safety
 - Browser state synchronization.
 - Stale/closed-page handling.
 - Tool execution limits.
@@ -96,27 +96,27 @@ The architecture is intentionally modular:
 
 ---
 
-# 📊 Project Status
+# ðŸ“Š Project Status
 
 <!-- JARVIS_STATUS_START -->
 ### Current build
 
-**Stage 4 — Browser Integration & Automation** · 🟡 **IN PROGRESS**
+**Stage 4 â€” Browser Integration & Automation** Â· ðŸŸ¡ **IN PROGRESS**
 
 | Stage | Area | Status |
 |:---:|---|:---:|
-| 1 | Core Agent & Identity | 🟢 **COMPLETE** |
-| 2 | Application Launching & Tool Registry | 🟢 **COMPLETE** |
-| 3 | Windows Computer Control | 🟢 **COMPLETE** |
-| 4 | Brave Browser Automation | 🟡 **IN PROGRESS** |
-| 5 | Voice / Wake Word | ⚪ **PLANNED** |
-| 6 | Persistent Background Assistant | ⚪ **PLANNED** |
-| 7 | Advanced Computer Vision | ⚪ **PLANNED** |
-| 8 | Advanced Multi-App Workflows | ⚪ **PLANNED** |
-| 9 | Memory & Personalization | ⚪ **PLANNED** |
-| 10 | Full JARVIS Experience | ⚪ **PLANNED** |
+| 1 | Core Agent & Identity | ðŸŸ¢ **COMPLETE** |
+| 2 | Application Launching & Tool Registry | ðŸŸ¢ **COMPLETE** |
+| 3 | Windows Computer Control | ðŸŸ¢ **COMPLETE** |
+| 4 | Brave Browser Automation | ðŸŸ¡ **IN PROGRESS** |
+| 5 | Voice / Wake Word | âšª **PLANNED** |
+| 6 | Persistent Background Assistant | âšª **PLANNED** |
+| 7 | Advanced Computer Vision | âšª **PLANNED** |
+| 8 | Advanced Multi-App Workflows | âšª **PLANNED** |
+| 9 | Memory & Personalization | âšª **PLANNED** |
+| 10 | Full JARVIS Experience | âšª **PLANNED** |
 
-**Progress:** `████████████░░░░░░░░` **40%**
+**Progress:** `â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘` **40%**
 
 **Last repository update:** `Generated automatically by GitHub Actions`
 
@@ -126,7 +126,7 @@ The architecture is intentionally modular:
 
 ---
 
-## 🧭 Roadmap
+## ðŸ§­ Roadmap
 
 ```mermaid
 flowchart LR
@@ -149,80 +149,80 @@ flowchart LR
     class S5,S6,S7,S8,S9,S10 planned;
 ```
 
-### Stage 1 — Core Agent
+### Stage 1 â€” Core Agent
 Foundation, provider abstraction, identity, configuration and conversational history.
 
-### Stage 2 — Application Control
+### Stage 2 â€” Application Control
 Tool-based application launching and an extensible tool registry.
 
-### Stage 3 — Computer Control
+### Stage 3 â€” Computer Control
 Keyboard, mouse, filesystem and controlled Windows interaction.
 
-### Stage 4 — Browser Automation
+### Stage 4 â€” Browser Automation
 Brave control, navigation, tabs, page reading, interaction and multi-step browser tasks.
 
-### Stage 5 — Voice Interface
+### Stage 5 â€” Voice Interface
 Wake-word detection, speech-to-text and text-to-speech so JARVIS can respond without a terminal prompt.
 
-### Stage 6 — Persistent Background Assistant
+### Stage 6 â€” Persistent Background Assistant
 Run JARVIS as a background Windows process/service with startup and tray controls.
 
-### Stage 7 — Computer Vision
+### Stage 7 â€” Computer Vision
 Use screenshots/vision to understand UI state when DOM/API-level automation is insufficient.
 
-### Stage 8 — Advanced Workflows
+### Stage 8 â€” Advanced Workflows
 Longer multi-application tasks with planning, verification and recovery.
 
-### Stage 9 — Memory & Personalization
+### Stage 9 â€” Memory & Personalization
 Useful long-term preferences, task context and configurable memory.
 
-### Stage 10 — Full JARVIS Experience
+### Stage 10 â€” Full JARVIS Experience
 A polished voice-first desktop assistant combining the previous capabilities into one cohesive system.
 
 ---
 
-# 🏗️ Architecture
+# ðŸ—ï¸ Architecture
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│                         JARVIS                              │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  User Input                                                 │
-│      │                                                      │
-│      ▼                                                      │
-│  Agent / Orchestrator                                       │
-│      │                                                      │
-│      ├──────────────► LLM Provider                          │
-│      │                   │                                  │
-│      │                   ▼                                  │
-│      │              Tool Selection                          │
-│      │                   │                                  │
-│      ▼                   ▼                                  │
-│  Tool Registry ──────────────────────────────────────────┐  │
-│      │             │              │                      │  │
-│      ▼             ▼              ▼                      ▼  │
-│  Windows       Filesystem      Browser                Future │
-│  Tools         Tools           Tools                  Tools  │
-│      │             │              │                      │  │
-│      └─────────────┴──────────────┴──────────────────────┘  │
-│                            │                                │
-│                            ▼                                │
-│                      Tool Result                            │
-│                            │                                │
-│                            ▼                                │
-│                         Agent                               │
-│                            │                                │
-│                            ▼                                │
-│                         Response                            │
-└─────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                         JARVIS                              â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚                                                             â”‚
+â”‚  User Input                                                 â”‚
+â”‚      â”‚                                                      â”‚
+â”‚      â–¼                                                      â”‚
+â”‚  Agent / Orchestrator                                       â”‚
+â”‚      â”‚                                                      â”‚
+â”‚      â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–º LLM Provider                          â”‚
+â”‚      â”‚                   â”‚                                  â”‚
+â”‚      â”‚                   â–¼                                  â”‚
+â”‚      â”‚              Tool Selection                          â”‚
+â”‚      â”‚                   â”‚                                  â”‚
+â”‚      â–¼                   â–¼                                  â”‚
+â”‚  Tool Registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
+â”‚      â”‚             â”‚              â”‚                      â”‚  â”‚
+â”‚      â–¼             â–¼              â–¼                      â–¼  â”‚
+â”‚  Windows       Filesystem      Browser                Future â”‚
+â”‚  Tools         Tools           Tools                  Tools  â”‚
+â”‚      â”‚             â”‚              â”‚                      â”‚  â”‚
+â”‚      â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
+â”‚                            â”‚                                â”‚
+â”‚                            â–¼                                â”‚
+â”‚                      Tool Result                            â”‚
+â”‚                            â”‚                                â”‚
+â”‚                            â–¼                                â”‚
+â”‚                         Agent                               â”‚
+â”‚                            â”‚                                â”‚
+â”‚                            â–¼                                â”‚
+â”‚                         Response                            â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 The separation between **LLM reasoning** and **deterministic tools** is important: it lets JARVIS change models without rewriting every computer-control capability.
 
 ---
 
-# 🚀 Quick Start
+# ðŸš€ Quick Start
 
 ## 1. Clone the repository
 
@@ -286,7 +286,7 @@ __pycache__/
 
 ---
 
-# ▶️ Run JARVIS
+# â–¶ï¸ Run JARVIS
 
 ## CLI
 
@@ -304,7 +304,7 @@ __pycache__/
 
 ---
 
-# 🧪 Testing
+# ðŸ§ª Testing
 
 Run the full test suite:
 
@@ -323,48 +323,48 @@ Then start JARVIS and perform the relevant manual acceptance tests.
 
 ---
 
-# 🔧 Development
+# ðŸ”§ Development
 
 A typical project layout:
 
 ```text
 JARVIS/
-├── backend/
-│   ├── main.py
-│   ├── agent/
-│   ├── providers/
-│   └── tools/
-├── tests/
-├── scripts/
-├── assets/
-├── .github/
-│   └── workflows/
-├── .env.example
-├── .gitignore
-├── README.md
-└── requirements.txt
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ main.py
+â”‚   â”œâ”€â”€ agent/
+â”‚   â”œâ”€â”€ providers/
+â”‚   â””â”€â”€ tools/
+â”œâ”€â”€ tests/
+â”œâ”€â”€ scripts/
+â”œâ”€â”€ assets/
+â”œâ”€â”€ .github/
+â”‚   â””â”€â”€ workflows/
+â”œâ”€â”€ .env.example
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ README.md
+â””â”€â”€ requirements.txt
 ```
 
 The exact structure may evolve as new stages are implemented.
 
 ---
 
-# 🔄 Automatic GitHub Status
+# ðŸ”„ Automatic GitHub Status
 
 The repository includes a GitHub Actions workflow:
 
 ```text
 git push
-   │
-   ▼
+   â”‚
+   â–¼
 GitHub Actions
-   │
-   ├── Install dependencies
-   ├── Run tests
-   ├── Read .github/jarvis_status.json
-   ├── Calculate stage progress
-   ├── Update README status block
-   └── Commit status update
+   â”‚
+   â”œâ”€â”€ Install dependencies
+   â”œâ”€â”€ Run tests
+   â”œâ”€â”€ Read .github/jarvis_status.json
+   â”œâ”€â”€ Calculate stage progress
+   â”œâ”€â”€ Update README status block
+   â””â”€â”€ Commit status update
 ```
 
 The workflow uses the repository's built-in `GITHUB_TOKEN`; no personal GitHub token is required.
@@ -421,7 +421,7 @@ This makes the status automation predictable and prevents accidental "100% compl
 
 ---
 
-# 🔐 Security
+# ðŸ” Security
 
 JARVIS is intended to operate with meaningful access to a Windows machine, so security is a core part of the architecture.
 
@@ -440,7 +440,7 @@ High-impact actions should require appropriate confirmation.
 
 ---
 
-# 🎯 Project Philosophy
+# ðŸŽ¯ Project Philosophy
 
 JARVIS is not intended to be just a chatbot with a fancy name.
 
@@ -448,19 +448,19 @@ The long-term goal is an assistant that can:
 
 ```text
 UNDERSTAND
-    ↓
+    â†“
 PLAN
-    ↓
+    â†“
 SELECT TOOLS
-    ↓
+    â†“
 ACT
-    ↓
+    â†“
 OBSERVE
-    ↓
+    â†“
 VERIFY
-    ↓
+    â†“
 RECOVER
-    ↓
+    â†“
 RESPOND
 ```
 
@@ -468,7 +468,7 @@ Every stage expands the same underlying agent architecture rather than creating 
 
 ---
 
-# 🌌 Long-Term Vision
+# ðŸŒŒ Long-Term Vision
 
 The final JARVIS experience is envisioned as a **voice-first Windows assistant** that can understand a natural request, determine the necessary actions, operate applications and websites, verify what happened, and report the result clearly.
 
@@ -480,29 +480,29 @@ The target architecture is:
 
 ```text
 Voice
-  ↓
+  â†“
 Wake Word
-  ↓
+  â†“
 Speech-to-Text
-  ↓
+  â†“
 JARVIS Agent
-  ↓
+  â†“
 LLM
-  ↓
+  â†“
 Tool Planning
-  ↓
+  â†“
 Brave / Windows / Files / Vision
-  ↓
+  â†“
 Verification
-  ↓
+  â†“
 Text-to-Speech
-  ↓
+  â†“
 User
 ```
 
 ---
 
-# 🤝 Contributing
+# ðŸ¤ Contributing
 
 This is an evolving project.
 
@@ -520,10 +520,55 @@ When adding a new capability:
 
 <div align="center">
 
-### ◈ JARVIS IS BEING BUILT ONE CAPABILITY AT A TIME ◈
+### â—ˆ JARVIS IS BEING BUILT ONE CAPABILITY AT A TIME â—ˆ
 
-`UNDERSTAND` → `ACT` → `VERIFY` → `IMPROVE`
+`UNDERSTAND` â†’ `ACT` â†’ `VERIFY` â†’ `IMPROVE`
 
-⭐ **Star the repository if you want to follow the build.**
+â­ **Star the repository if you want to follow the build.**
 
 </div>
+
+
+---
+
+## Exiting JARVIS
+
+### Terminal mode
+
+Type any of the following commands at the `You:` prompt:
+
+```
+exit
+quit
+shutdown
+close jarvis
+stop jarvis
+shutdown jarvis
+goodbye jarvis
+```
+
+JARVIS will respond *"Shutting down. Goodbye."* and terminate cleanly.
+
+### Voice mode
+
+After waking JARVIS with *"Hello JARVIS"*, say any of:
+
+```
+"Shut yourself down"
+"Close yourself"
+"Turn yourself off"
+"Shut down JARVIS"
+"Goodbye JARVIS"
+"Exit"
+"Shutdown"
+```
+
+JARVIS will speak the farewell, stop all audio resources, and exit.
+
+### Keyboard shortcut
+
+Press **Ctrl+C** at any time in both text and voice mode.  
+JARVIS will shut down cleanly — no ugly traceback.
+
+> Shutdown commands are detected **locally** before reaching the LLM,  
+> so no API token is consumed on exit.

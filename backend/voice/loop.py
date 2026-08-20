@@ -1,5 +1,5 @@
 ﻿"""
-Stage 5: VoiceLoop — the main conversational voice interaction loop.
+Stage 5: VoiceLoop — with graceful shutdown support.
 """
 import logging
 import time
@@ -11,6 +11,7 @@ from backend.voice.stt import SpeechRecognizer
 from backend.voice.tts import TextToSpeech
 from backend.voice.wake_word import create_wake_word_detector
 from backend.config import settings
+from backend.shutdown import shutdown_manager, is_shutdown_command
 
 if TYPE_CHECKING:
     from backend.agent import Agent
@@ -19,7 +20,6 @@ logger = logging.getLogger("backend.voice.loop")
 
 
 def _print_status(msg: str):
-    """Print a timestamped voice status line to the terminal."""
     print(f"[VOICE] {msg}", flush=True)
 
 
@@ -41,7 +41,7 @@ class VoiceLoop:
         try:
             self._tts.speak_and_wait(text)
         except Exception as exc:
-            logger.error(f"[TTS] Failed to speak response: {exc}")
+            logger.error(f"[TTS] Failed: {exc}")
 
     def _listen_for_command(self):
         self._state_machine.transition(VoiceState.LISTENING_FOR_COMMAND)
@@ -61,6 +61,18 @@ class VoiceLoop:
             logger.error(f"[AGENT] Error: {exc}")
             return "I encountered an error. Please try again."
 
+    def _cleanup(self):
+        """Stop all owned resources cleanly."""
+        try:
+            self._wake_detector.stop()
+        except Exception:
+            pass
+        try:
+            self._tts.stop()
+        except Exception:
+            pass
+        self._running = False
+
     def run(self):
         if not self._stt.is_available():
             _print_status("Voice mode unavailable — STT/mic not ready. Use text mode.")
@@ -70,16 +82,17 @@ class VoiceLoop:
             _print_status("Warning: TTS unavailable. Responses will be text-only.")
 
         self._running = True
+        shutdown_manager.reset()
         self._wake_detector.start()
 
         print("\n" + "=" * 50)
         print("  JARVIS Stage 5 — Voice Mode")
         print(f"  Wake phrase: \"{settings.wake_word}\"")
-        print("  Press Ctrl+C to exit.")
+        print("  Say 'shut yourself down' or press Ctrl+C to exit.")
         print("=" * 50 + "\n")
 
         try:
-            while self._running:
+            while self._running and not shutdown_manager.is_shutdown_requested():
                 self._state_machine.transition(VoiceState.LISTENING_FOR_WAKE_WORD)
                 _print_status(f"Listening for wake word: \"{settings.wake_word}\" ...")
 
@@ -114,6 +127,18 @@ class VoiceLoop:
                     self._state_machine.transition(VoiceState.IDLE)
                     continue
 
+                # ── Deterministic shutdown check (before LLM) ──────────
+                if is_shutdown_command(command):
+                    logger.info("[SHUTDOWN] Shutdown command detected via voice.")
+                    self._cleanup()
+                    shutdown_manager.shutdown(
+                        tts=self._tts,
+                        wake_detector=self._wake_detector,
+                        speak_farewell=True
+                    )
+                    return
+
+                # ── Normal command → agent ─────────────────────────────
                 response = "I encountered an error. Please try again."
                 try:
                     response = self._process_command(command)
@@ -128,10 +153,12 @@ class VoiceLoop:
                 _print_status("Returning to wake-word detection.\n")
 
         except KeyboardInterrupt:
-            print("\n[VOICE] Stopped.")
+            print()
+            self._cleanup()
+            shutdown_manager.shutdown(
+                tts=self._tts,
+                wake_detector=self._wake_detector,
+                speak_farewell=False
+            )
         finally:
-            self._wake_detector.stop()
-            self._tts.stop()
-            self._running = False
-
-
+            self._cleanup()

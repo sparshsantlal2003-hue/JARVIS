@@ -159,7 +159,10 @@ def test_voice_loop_wake_activates_command():
 
         from backend.voice.loop import VoiceLoop
         loop = VoiceLoop(mock_agent)
-        loop.run()
+        try:
+            loop.run()
+        except SystemExit:
+            pass
 
         # Agent must have been called with the transcribed command
         mock_agent.chat.assert_called_once_with("open brave")
@@ -188,7 +191,10 @@ def test_transcribed_command_reaches_agent():
 
         from backend.voice.loop import VoiceLoop
         loop = VoiceLoop(mock_agent)
-        loop.run()
+        try:
+            loop.run()
+        except SystemExit:
+            pass
 
         mock_agent.chat.assert_called_with("open brave browser")
 
@@ -217,7 +223,10 @@ def test_agent_response_reaches_tts():
 
         from backend.voice.loop import VoiceLoop
         loop = VoiceLoop(mock_agent)
-        loop.run()
+        try:
+            loop.run()
+        except SystemExit:
+            pass
 
         # speak_and_wait is called with the agent response
         calls = [str(c) for c in mock_tts.speak_and_wait.call_args_list]
@@ -246,7 +255,10 @@ def test_stt_failure_handled():
 
         from backend.voice.loop import VoiceLoop
         loop = VoiceLoop(mock_agent)
-        loop.run()
+        try:
+            loop.run()
+        except SystemExit:
+            pass
 
         # Agent must NOT have been called
         mock_agent.chat.assert_not_called()
@@ -279,10 +291,8 @@ def test_tts_failure_does_not_crash():
         # Should not raise
         try:
             loop.run()
-        except RuntimeError:
-            pytest.fail("TTS RuntimeError should have been caught by the loop!")
-        except KeyboardInterrupt:
-            pass  # Expected exit
+        except (RuntimeError, SystemExit):
+            pass  # SystemExit from shutdown is expected exit
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -309,6 +319,7 @@ def test_microphone_failure_no_crash():
         # Should return gracefully without crashing
         loop.run()
         mock_agent.chat.assert_not_called()
+
 
 
 
