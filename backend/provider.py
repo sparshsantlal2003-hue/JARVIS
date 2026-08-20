@@ -1,4 +1,4 @@
-import re
+﻿import re
 import ast
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
@@ -58,9 +58,11 @@ class GeminiProvider(AIProvider):
             "Opening an application does NOT mean you should automatically start typing in it.\n"
             "STRICT RULE: Once you have successfully executed the necessary tools to fulfill the user's command (like scrolling, playing a video, or typing), YOU MUST STOP CALLING TOOLS IMMEDIATELY! DO NOT navigate to Google! Just output a final text message or use the finish_task tool! "
             "Do not call the same tool twice unless explicitly requested. You MUST reply with a final text message to the user acknowledging completion. "
-            "IMPORTANT: If the user simply asks you to 'search for X' or 'open Y', just confirm the action is done. DO NOT explain the topic or summarize the results unless explicitly asked to!\n"
+            "CONCISENESS RULE: You MUST be extremely concise to save API tokens. When executing a command, NEVER explain your process, NEVER explain how you did it, and NEVER summarize the results unless explicitly asked. Your final response should be a maximum of 1 or 2 short sentences simply confirming the action is done.\n" \
+              "TYPING INSTRUCTION: When asked to type a sentence multiple times, you must separate each repetition with a space, NOT a newline! ONLY use newlines if the user explicitly asks you to type them on new lines or press enter.\n"
             "BROWSER USAGE: When instructed to use the browser, you must sequence your tool calls correctly (e.g. search_web first, then read_page, then stop).\n" \
             "SEARCH INSTRUCTION: When the user asks to 'open the first result', DO NOT use click_element. You MUST read the 'url' from the search_web JSON results and use the navigate(url) tool to open it directly!\n" \
+            "NOTEPAD INSTRUCTION: When the user asks you to type something in Notepad, you MUST first use keyboard_action('ctrl+n') to open a new tab in Notepad before typing. NEVER type into an existing saved file/tab. NEVER open Brave or any browser after completing a typing task unless the user explicitly requests it.\n" \
             "YOUTUBE INSTRUCTION: To play or pause a video, you MUST use keyboard_action('k'). NEVER use go_back or Space! If the user asks to search for something ON YouTube, DO NOT use search_web! You MUST use the navigate tool with the URL https://www.youtube.com/results?search_query=... directly!"
         )
         
@@ -227,9 +229,11 @@ class GroqProvider(AIProvider):
             "Opening an application does NOT mean you should automatically start typing in it.\n"
             "STRICT RULE: Once you have successfully executed the necessary tools to fulfill the user's command (like scrolling, playing a video, or typing), YOU MUST STOP CALLING TOOLS IMMEDIATELY! DO NOT navigate to Google! Just output a final text message or use the finish_task tool! "
             "Do not call the same tool twice unless explicitly requested. You MUST reply with a final text message to the user acknowledging completion. "
-            "IMPORTANT: If the user simply asks you to 'search for X' or 'open Y', just confirm the action is done. DO NOT explain the topic or summarize the results unless explicitly asked to!\n"
+            "CONCISENESS RULE: You MUST be extremely concise to save API tokens. When executing a command, NEVER explain your process, NEVER explain how you did it, and NEVER summarize the results unless explicitly asked. Your final response should be a maximum of 1 or 2 short sentences simply confirming the action is done.\n" \
+              "TYPING INSTRUCTION: When asked to type a sentence multiple times, you must separate each repetition with a space, NOT a newline! ONLY use newlines if the user explicitly asks you to type them on new lines or press enter.\n"
             "BROWSER USAGE: When instructed to use the browser, you must sequence your tool calls correctly (e.g. search_web first, then read_page, then stop).\n" \
             "SEARCH INSTRUCTION: When the user asks to 'open the first result', DO NOT use click_element. You MUST read the 'url' from the search_web JSON results and use the navigate(url) tool to open it directly!\n" \
+            "NOTEPAD INSTRUCTION: When the user asks you to type something in Notepad, you MUST first use keyboard_action('ctrl+n') to open a new tab in Notepad before typing. NEVER type into an existing saved file/tab. NEVER open Brave or any browser after completing a typing task unless the user explicitly requests it.\n" \
             "YOUTUBE INSTRUCTION: To play or pause a video, you MUST use keyboard_action('k'). NEVER use go_back or Space! If the user asks to search for something ON YouTube, DO NOT use search_web! You MUST use the navigate tool with the URL https://www.youtube.com/results?search_query=... directly!"
         )
         
@@ -400,3 +404,4 @@ def get_provider() -> AIProvider:
     else:
         logger.warning(f"Unknown provider '{settings.ai_provider}', falling back to MockProvider.")
         return MockProvider()
+
