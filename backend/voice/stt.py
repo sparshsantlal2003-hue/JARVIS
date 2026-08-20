@@ -1,6 +1,9 @@
 ﻿"""
-Stage 5: SpeechRecognizer — simple STT using the system default microphone.
-Records audio via sounddevice, sends to Google Web Speech API.
+Stage 5: SpeechRecognizer — records until silence using sounddevice,
+then transcribes via Google Web Speech API.
+
+Uses energy-based VAD to know when user has finished speaking,
+so commands are not cut off mid-sentence.
 """
 import io
 import logging
@@ -25,6 +28,11 @@ except ImportError:
     logger.warning("[STT] SpeechRecognition not available.")
 
 TARGET_RATE = 16000
+CHUNK_MS = 50
+CHUNK_SIZE = int(TARGET_RATE * CHUNK_MS / 1000)
+SPEECH_THRESHOLD = 400      # amplitude to consider as speech
+SILENCE_CHUNKS = 20         # 20 × 50ms = 1s of silence ends recording
+MAX_CHUNKS = 200            # 200 × 50ms = 10s max recording
 
 
 class SpeechRecognizer:
@@ -36,18 +44,47 @@ class SpeechRecognizer:
     def is_available(self) -> bool:
         return _SD_AVAILABLE and _SR_AVAILABLE
 
-    def _record(self, max_duration: float) -> Optional[bytes]:
+    def _record_until_silence(self) -> Optional[bytes]:
+        """
+        Record audio chunks until silence is detected.
+        Waits for speech to start first, then stops after silence.
+        """
         if not _SD_AVAILABLE:
             return None
-        import numpy as np
-        n_samples = int(TARGET_RATE * max_duration)
+
+        frames = []
+        silence_count = 0
+        speech_started = False
+        max_chunks = int(self.command_timeout * 1000 / CHUNK_MS)
+        silence_limit = int(self.silence_timeout * 1000 / CHUNK_MS)
+
         try:
-            audio_array = sd.rec(n_samples, samplerate=TARGET_RATE,
-                                 channels=1, dtype="int16", blocking=True)
-            return audio_array.tobytes()
+            with sd.InputStream(samplerate=TARGET_RATE, channels=1,
+                                dtype="int16", blocksize=CHUNK_SIZE) as stream:
+                for _ in range(max_chunks):
+                    chunk, _ = stream.read(CHUNK_SIZE)
+                    chunk_flat = chunk.flatten()
+                    amp = float(np.abs(chunk_flat).mean())
+
+                    if amp > SPEECH_THRESHOLD:
+                        speech_started = True
+                        silence_count = 0
+                        frames.append(chunk_flat.copy())
+                    else:
+                        if speech_started:
+                            frames.append(chunk_flat.copy())
+                            silence_count += 1
+                            if silence_count >= silence_limit:
+                                break  # done — silence after speech
+                        # If speech hasn't started yet, skip (don't record silence preamble)
         except Exception as exc:
             logger.error(f"[STT] Recording error: {exc}")
             return None
+
+        if not frames:
+            return None
+
+        return np.concatenate(frames).astype("int16").tobytes()
 
     def _pcm_to_audio_data(self, pcm_bytes: bytes) -> Optional[object]:
         if not _SR_AVAILABLE or self._recognizer is None:
@@ -86,7 +123,8 @@ class SpeechRecognizer:
     def recognize(self) -> Optional[str]:
         if not self.is_available():
             return None
-        pcm = self._record(max_duration=self.command_timeout)
+        logger.debug("[STT] Waiting for speech...")
+        pcm = self._record_until_silence()
         if not pcm:
             return None
         audio = self._pcm_to_audio_data(pcm)
