@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+﻿from typing import List, Dict, Any
 from backend.provider import get_provider
 from backend.logger import setup_logger
 from backend.tools.registry import registry
@@ -16,9 +16,10 @@ class Agent:
             logger.debug(f"Received user message: {message}")
             self.history.append({"role": "user", "content": message})
             
-            max_loops = 8
+            max_loops = 10
             previous_tool_calls = set()
             redundant_count = 0
+            last_tool_result = None
             
             for _ in range(max_loops):
                 try:
@@ -64,6 +65,7 @@ class Agent:
                     previous_tool_calls.add(tool_signature)
                     
                     result = registry.execute(tool_name, tool_args)
+                    last_tool_result = result
                     
                     self.history.append({
                         "role": "user",
@@ -73,6 +75,10 @@ class Agent:
                     if isinstance(result, dict) and result.get("task_finished"):
                         return result.get("message", "Task completed.")
             
+            # Last tool succeeded but AI kept looping — return terse confirmation
+            if isinstance(last_tool_result, dict) and last_tool_result.get("success"):
+                logger.warning("Agent hit loop limit after successful tool — returning Done.")
+                return "Done."
             error_msg = "Agent exceeded maximum tool execution loops."
             logger.error(error_msg)
             return error_msg
@@ -81,3 +87,4 @@ class Agent:
             error_str = str(e)
             logger.error(f"Agent encountered an error: {e}")
             return f"An unexpected error occurred: {error_str.split('Details:')[0][:200]}..."
+
