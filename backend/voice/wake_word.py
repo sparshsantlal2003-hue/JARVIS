@@ -1,12 +1,6 @@
 ﻿"""
-Stage 5: WakeWordDetector — lightweight, two-phase wake word detection.
-
-Phase 1: LOCAL amplitude VAD — record a clip and check if speech energy
-         is above threshold. FAST, no network call needed.
-Phase 2: Only if speech detected — send to Google STT and fuzzy-match
-         against the wake phrase.
-
-This avoids hammering the STT API on silence and prevents the busy-loop.
+Stage 5: WakeWordDetector — two-phase (local VAD + Google STT).
+Uses WASAPI 48kHz → downsample for reliable Windows microphone support.
 """
 import logging
 import time
@@ -24,10 +18,7 @@ class BaseWakeWordDetector:
 
 
 class FuzzyWakeWordDetector(BaseWakeWordDetector):
-
-    # Amplitude threshold — audio below this is treated as silence.
-    # Tune up if your mic is very sensitive; tune down if it misses quiet speech.
-    SPEECH_THRESHOLD = 400
+    SPEECH_THRESHOLD = 150  # tuned for WASAPI (amp peaks ~500-2000 when speaking)
 
     def __init__(self, stt, wake_phrase: Optional[str] = None):
         self._stt = stt
@@ -44,16 +35,7 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
     def is_running(self) -> bool:
         return self._running
 
-    # ------------------------------------------------------------------
     def detect(self) -> bool:
-        """
-        Two-phase detection:
-          1. Record short clip + check amplitude locally (free, instant)
-          2. Only if speech detected → call Google STT + fuzzy match
-
-        Returns True if the wake phrase was heard, False otherwise.
-        Sleeps briefly on silence so the terminal does not spam.
-        """
         if not self._running:
             return False
 
@@ -62,35 +44,37 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
             import sounddevice as sd
             import io, wave, speech_recognition as sr
             from backend.voice.mic_selector import get_best_device
+            from backend.voice.stt import _downsample, TARGET_RATE
 
-            RATE = 16000
-            DURATION = 1.5  # seconds per listen window
+            device_index, device_name, native_rate = get_best_device()
+            channels = 2 if native_rate == 48000 else 1
+            DURATION = 1.5
+            n_samples = int(native_rate * DURATION)
 
-            device_index, device_name = get_best_device()
-
-            rec_kwargs = dict(samplerate=RATE, channels=1, dtype="int16", blocking=True)
+            rec_kwargs = dict(samplerate=native_rate, channels=channels, dtype="int16", blocking=True)
             if device_index is not None:
                 rec_kwargs["device"] = device_index
 
-            audio_array = sd.rec(int(DURATION * RATE), **rec_kwargs)
+            audio_array = sd.rec(n_samples, **rec_kwargs)
 
-            # ── Phase 1: LOCAL VAD ────────────────────────────────────
+            # Phase 1: local VAD
             amplitude = float(np.abs(audio_array).mean())
             if amplitude < self.SPEECH_THRESHOLD:
-                # Silence detected — sleep briefly then return False quietly
-                # (no Google STT call, no log spam)
                 time.sleep(0.05)
                 return False
 
-            # ── Phase 2: STT only when speech energy detected ─────────
-            logger.debug(f"[VOICE] Speech energy detected (amp={amplitude:.0f}), checking for wake phrase...")
+            logger.debug(f"[VOICE] Speech detected (amp={amplitude:.0f}), checking wake phrase...")
+
+            # Phase 2: downsample → STT
+            mono = _downsample(audio_array, native_rate, TARGET_RATE)
+            pcm = mono.astype("int16").tobytes()
 
             buf = io.BytesIO()
             with wave.open(buf, "wb") as wf:
                 wf.setnchannels(1)
                 wf.setsampwidth(2)
-                wf.setframerate(RATE)
-                wf.writeframes(audio_array.tobytes())
+                wf.setframerate(TARGET_RATE)
+                wf.writeframes(pcm)
             buf.seek(0)
 
             recognizer = sr.Recognizer()
@@ -102,11 +86,10 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
                 logger.debug(f"[VOICE] Heard: \"{text}\"")
                 return self._is_wake_phrase(text)
             except sr.UnknownValueError:
-                # Speech energy was there but unintelligible — not the wake phrase
                 return False
             except sr.RequestError as exc:
-                logger.warning(f"[VOICE] STT request failed: {exc}")
-                time.sleep(1.0)  # Back off briefly on network error
+                logger.warning(f"[VOICE] STT request error: {exc}")
+                time.sleep(1.0)
                 return False
 
         except Exception as exc:
@@ -114,9 +97,7 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
             time.sleep(0.2)
             return False
 
-    # ------------------------------------------------------------------
     def _is_wake_phrase(self, text: str) -> bool:
-        """Fuzzy match — 'jarvis' must be present + ≥50% of wake words."""
         wake_words = set(self._wake_phrase.split())
         heard_words = set(text.split())
         if "jarvis" not in heard_words:

@@ -1,9 +1,5 @@
 ﻿"""
-Stage 5: SpeechRecognizer — STT abstraction with smart mic auto-selection.
-
-Automatically uses the best available microphone (prefers Bluetooth headset),
-re-detecting on every recognize() call so connecting/disconnecting earbuds
-works without restarting JARVIS.
+Stage 5: SpeechRecognizer — STT using WASAPI (48kHz) → downsample → Google STT.
 """
 import io
 import logging
@@ -18,20 +14,33 @@ try:
     _SD_AVAILABLE = True
 except ImportError:
     _SD_AVAILABLE = False
-    logger.warning("[STT] sounddevice/numpy not available. Recording disabled.")
+    logger.warning("[STT] sounddevice/numpy not available.")
 
 try:
     import speech_recognition as sr
     _SR_AVAILABLE = True
 except ImportError:
     _SR_AVAILABLE = False
-    logger.warning("[STT] SpeechRecognition not available. STT disabled.")
+    logger.warning("[STT] SpeechRecognition not available.")
+
+
+TARGET_RATE = 16000  # Google STT requires 16kHz
+
+
+def _downsample(audio: "np.ndarray", src_rate: int, dst_rate: int = TARGET_RATE) -> "np.ndarray":
+    """Simple integer-ratio downsampling (no scipy needed)."""
+    if src_rate == dst_rate:
+        return audio
+    import numpy as np
+    if audio.ndim > 1:
+        audio = audio[:, 0]  # take first channel (mono)
+    ratio = src_rate / dst_rate
+    new_len = int(len(audio) / ratio)
+    indices = (np.arange(new_len) * ratio).astype(int)
+    return audio[indices]
 
 
 class SpeechRecognizer:
-    SAMPLE_RATE = 16000
-    CHANNELS = 1
-
     def __init__(self, silence_timeout: float = 1.2, command_timeout: float = 10.0):
         self.silence_timeout = silence_timeout
         self.command_timeout = command_timeout
@@ -41,29 +50,26 @@ class SpeechRecognizer:
         return _SD_AVAILABLE and _SR_AVAILABLE
 
     def _get_device(self):
-        """Re-scan for the best mic every time — handles BT connect/disconnect."""
         from backend.voice.mic_selector import get_best_device
-        idx, name = get_best_device()
-        logger.info(f"[STT] Using microphone: [{idx}] {name}")
-        return idx
+        return get_best_device()
 
-    def _record(self, max_duration: float, device_index=None, silence_threshold: float = 300.0) -> Optional[bytes]:
+    def _record(self, max_duration: float,
+                device_index=None, native_rate: int = 16000,
+                silence_threshold: float = 150.0) -> Optional[bytes]:
         if not _SD_AVAILABLE:
             return None
+        import numpy as np
 
+        channels = 2 if native_rate == 48000 else 1
         chunk_duration = 0.1
-        chunk_samples = int(self.SAMPLE_RATE * chunk_duration)
+        chunk_samples = int(native_rate * chunk_duration)
         silence_chunks_limit = int(self.silence_timeout / chunk_duration)
         total_chunks = int(max_duration / chunk_duration)
         frames = []
         silence_chunks = 0
 
         try:
-            kwargs = dict(
-                samplerate=self.SAMPLE_RATE,
-                channels=self.CHANNELS,
-                dtype="int16"
-            )
+            kwargs = dict(samplerate=native_rate, channels=channels, dtype="int16")
             if device_index is not None:
                 kwargs["device"] = device_index
 
@@ -71,7 +77,7 @@ class SpeechRecognizer:
                 for _ in range(total_chunks):
                     chunk, _ = stream.read(chunk_samples)
                     frames.append(chunk.copy())
-                    amplitude = np.abs(chunk).mean()
+                    amplitude = float(np.abs(chunk).mean())
                     if amplitude < silence_threshold:
                         silence_chunks += 1
                     else:
@@ -79,16 +85,16 @@ class SpeechRecognizer:
                     if len(frames) > 5 and silence_chunks >= silence_chunks_limit:
                         break
         except Exception as exc:
-            logger.error(f"[STT] Recording error on device [{device_index}]: {exc}")
-            # Retry with system default if BT device failed
-            if device_index is not None:
-                logger.info("[STT] Retrying with system default microphone...")
-                return self._record(max_duration, device_index=None, silence_threshold=silence_threshold)
+            logger.error(f"[STT] Recording error: {exc}")
             return None
 
         if not frames:
             return None
-        return np.concatenate(frames, axis=0).tobytes()
+
+        audio_array = np.concatenate(frames, axis=0)
+        # Downsample to 16kHz mono for Google STT
+        mono = _downsample(audio_array, native_rate, TARGET_RATE)
+        return mono.astype("int16").tobytes()
 
     def _pcm_to_audio_data(self, pcm_bytes: bytes) -> Optional[object]:
         if not _SR_AVAILABLE or self._recognizer is None:
@@ -96,9 +102,9 @@ class SpeechRecognizer:
         try:
             buf = io.BytesIO()
             with wave.open(buf, "wb") as wf:
-                wf.setnchannels(self.CHANNELS)
+                wf.setnchannels(1)
                 wf.setsampwidth(2)
-                wf.setframerate(self.SAMPLE_RATE)
+                wf.setframerate(TARGET_RATE)
                 wf.writeframes(pcm_bytes)
             buf.seek(0)
             with sr.AudioFile(buf) as source:
@@ -116,21 +122,21 @@ class SpeechRecognizer:
             logger.info(f"[STT] Transcription: \"{text}\"")
             return text.strip()
         except sr.UnknownValueError:
-            logger.debug("[STT] Speech not understood.")
             return None
         except sr.RequestError as exc:
             logger.error(f"[STT] Google STT API error: {exc}")
             return None
         except Exception as exc:
-            logger.error(f"[STT] Unexpected transcription error: {exc}")
+            logger.error(f"[STT] Error: {exc}")
             return None
 
     def recognize(self) -> Optional[str]:
         if not self.is_available():
-            logger.warning("[STT] recognize() called but STT is unavailable.")
             return None
-        device_index = self._get_device()
-        pcm = self._record(max_duration=self.command_timeout, device_index=device_index)
+        idx, name, rate = self._get_device()
+        logger.info(f"[STT] Recording via [{idx}] {name} @ {rate}Hz")
+        pcm = self._record(max_duration=self.command_timeout,
+                           device_index=idx, native_rate=rate)
         if not pcm:
             return None
         audio = self._pcm_to_audio_data(pcm)
