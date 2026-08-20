@@ -88,3 +88,4 @@ class Agent:
             logger.error(f"Agent encountered an error: {e}")
             return f"An unexpected error occurred: {error_str.split('Details:')[0][:200]}..."
 
+
