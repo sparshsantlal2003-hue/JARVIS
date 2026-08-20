@@ -71,7 +71,7 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
             import io, wave, speech_recognition as sr
 
             RATE = 16000
-            DURATION = 2.5  # seconds — short enough to be responsive
+            DURATION = 1.2  # seconds — tight window for fast wake-word response
 
             audio_array = sd.rec(
                 int(DURATION * RATE),
@@ -128,3 +128,4 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
 def create_wake_word_detector(stt) -> BaseWakeWordDetector:
     """Factory: returns the best available detector."""
     return FuzzyWakeWordDetector(stt)
+

@@ -1,4 +1,4 @@
-import time
+﻿import time
 from typing import Optional, Dict, List, Any
 from playwright.sync_api import sync_playwright, Browser, BrowserContext, Page, Playwright
 from backend.logger import setup_logger
@@ -95,6 +95,22 @@ class BrowserManager:
                     self.context = self.browser.contexts[0]
                 else:
                     self.context = self.browser.new_context()
+
+                # Intercept popup/new-window events and redirect into the current tab
+                # instead of opening a new window. This prevents YouTube etc. from
+                # hijacking focus by spawning new browser windows.
+                def _handle_popup(popup):
+                    try:
+                        popup_url = popup.url
+                        logger.info(f"Popup intercepted: {popup_url} — redirecting to active tab.")
+                        popup.close()
+                        if self.current_page and not self.current_page.is_closed():
+                            self.current_page.goto(popup_url, wait_until="domcontentloaded", timeout=10000)
+                            self.current_page.bring_to_front()
+                    except Exception as pe:
+                        logger.warning(f"Popup handler error: {pe}")
+
+                self.context.on("page", _handle_popup)
                     
             self.sync_tabs()
             
@@ -165,3 +181,4 @@ class BrowserManager:
 
 # Global singleton
 browser_manager = BrowserManager()
+
