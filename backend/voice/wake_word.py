@@ -73,7 +73,7 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
                 return False
 
         except Exception as exc:
-            logger.debug(f"[VOICE] detect() error: {exc}")
+            logger.warning(f"[VOICE] detect() error: {exc}")
             time.sleep(0.2)
             return False
 
@@ -91,3 +91,4 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
 
 def create_wake_word_detector(stt) -> BaseWakeWordDetector:
     return FuzzyWakeWordDetector(stt)
+

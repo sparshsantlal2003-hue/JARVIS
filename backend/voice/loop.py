@@ -80,11 +80,8 @@ class VoiceLoop:
 
         try:
             while self._running:
-                prev_state = self._state_machine.current_state
                 self._state_machine.transition(VoiceState.LISTENING_FOR_WAKE_WORD)
-                # Only print the status message when re-entering the idle state
-                if prev_state != VoiceState.LISTENING_FOR_WAKE_WORD:
-                    _print_status(f"Listening for wake word: \"{settings.wake_word}\" ...")
+                _print_status(f"Listening for wake word: \"{settings.wake_word}\" ...")
 
                 wake_detected = False
                 try:
@@ -136,4 +133,5 @@ class VoiceLoop:
             self._wake_detector.stop()
             self._tts.stop()
             self._running = False
+
 
