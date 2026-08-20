@@ -1,4 +1,4 @@
-fastapi>=0.100.0
+﻿fastapi>=0.100.0
 uvicorn>=0.23.0
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
@@ -7,3 +7,11 @@ pytest>=7.4.0
 httpx>=0.24.1
 pyautogui==0.9.54
 groq>=0.9.0
+pygetwindow>=0.0.9
+
+# Stage 5 — Voice Interface
+SpeechRecognition>=3.10.0   # STT (Google Web Speech free tier)
+pyttsx3>=2.90               # TTS (offline Windows SAPI5, no API key)
+sounddevice>=0.4.6          # Microphone capture (Python 3.14 compatible)
+soundfile>=0.12.1           # Audio file I/O helper
+numpy>=1.24.0               # Array math for audio processing
