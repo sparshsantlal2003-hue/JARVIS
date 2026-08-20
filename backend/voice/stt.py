@@ -1,5 +1,6 @@
 ﻿"""
-Stage 5: SpeechRecognizer — STT using WASAPI (48kHz) → downsample → Google STT.
+Stage 5: SpeechRecognizer — simple STT using the system default microphone.
+Records audio via sounddevice, sends to Google Web Speech API.
 """
 import io
 import logging
@@ -23,21 +24,7 @@ except ImportError:
     _SR_AVAILABLE = False
     logger.warning("[STT] SpeechRecognition not available.")
 
-
-TARGET_RATE = 16000  # Google STT requires 16kHz
-
-
-def _downsample(audio: "np.ndarray", src_rate: int, dst_rate: int = TARGET_RATE) -> "np.ndarray":
-    """Simple integer-ratio downsampling (no scipy needed)."""
-    if src_rate == dst_rate:
-        return audio
-    import numpy as np
-    if audio.ndim > 1:
-        audio = audio[:, 0]  # take first channel (mono)
-    ratio = src_rate / dst_rate
-    new_len = int(len(audio) / ratio)
-    indices = (np.arange(new_len) * ratio).astype(int)
-    return audio[indices]
+TARGET_RATE = 16000
 
 
 class SpeechRecognizer:
@@ -49,52 +36,18 @@ class SpeechRecognizer:
     def is_available(self) -> bool:
         return _SD_AVAILABLE and _SR_AVAILABLE
 
-    def _get_device(self):
-        from backend.voice.mic_selector import get_best_device
-        return get_best_device()
-
-    def _record(self, max_duration: float,
-                device_index=None, native_rate: int = 16000,
-                silence_threshold: float = 150.0) -> Optional[bytes]:
+    def _record(self, max_duration: float) -> Optional[bytes]:
         if not _SD_AVAILABLE:
             return None
         import numpy as np
-
-        channels = 2 if native_rate == 48000 else 1
-        chunk_duration = 0.1
-        chunk_samples = int(native_rate * chunk_duration)
-        silence_chunks_limit = int(self.silence_timeout / chunk_duration)
-        total_chunks = int(max_duration / chunk_duration)
-        frames = []
-        silence_chunks = 0
-
+        n_samples = int(TARGET_RATE * max_duration)
         try:
-            kwargs = dict(samplerate=native_rate, channels=channels, dtype="int16")
-            if device_index is not None:
-                kwargs["device"] = device_index
-
-            with sd.InputStream(**kwargs) as stream:
-                for _ in range(total_chunks):
-                    chunk, _ = stream.read(chunk_samples)
-                    frames.append(chunk.copy())
-                    amplitude = float(np.abs(chunk).mean())
-                    if amplitude < silence_threshold:
-                        silence_chunks += 1
-                    else:
-                        silence_chunks = 0
-                    if len(frames) > 5 and silence_chunks >= silence_chunks_limit:
-                        break
+            audio_array = sd.rec(n_samples, samplerate=TARGET_RATE,
+                                 channels=1, dtype="int16", blocking=True)
+            return audio_array.tobytes()
         except Exception as exc:
             logger.error(f"[STT] Recording error: {exc}")
             return None
-
-        if not frames:
-            return None
-
-        audio_array = np.concatenate(frames, axis=0)
-        # Downsample to 16kHz mono for Google STT
-        mono = _downsample(audio_array, native_rate, TARGET_RATE)
-        return mono.astype("int16").tobytes()
 
     def _pcm_to_audio_data(self, pcm_bytes: bytes) -> Optional[object]:
         if not _SR_AVAILABLE or self._recognizer is None:
@@ -133,10 +86,7 @@ class SpeechRecognizer:
     def recognize(self) -> Optional[str]:
         if not self.is_available():
             return None
-        idx, name, rate = self._get_device()
-        logger.info(f"[STT] Recording via [{idx}] {name} @ {rate}Hz")
-        pcm = self._record(max_duration=self.command_timeout,
-                           device_index=idx, native_rate=rate)
+        pcm = self._record(max_duration=self.command_timeout)
         if not pcm:
             return None
         audio = self._pcm_to_audio_data(pcm)

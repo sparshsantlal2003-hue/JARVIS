@@ -1,6 +1,7 @@
 ﻿"""
-Stage 5: WakeWordDetector — two-phase (local VAD + Google STT).
-Uses WASAPI 48kHz → downsample for reliable Windows microphone support.
+Stage 5: WakeWordDetector — records a short clip with the system default
+microphone and fuzzy-matches against the wake phrase via Google STT.
+No amplitude filtering, no Bluetooth logic.
 """
 import logging
 import time
@@ -18,8 +19,6 @@ class BaseWakeWordDetector:
 
 
 class FuzzyWakeWordDetector(BaseWakeWordDetector):
-    SPEECH_THRESHOLD = 150  # tuned for WASAPI (amp peaks ~500-2000 when speaking)
-
     def __init__(self, stt, wake_phrase: Optional[str] = None):
         self._stt = stt
         self._wake_phrase = (wake_phrase or settings.wake_word).lower().strip()
@@ -38,43 +37,24 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
     def detect(self) -> bool:
         if not self._running:
             return False
-
         try:
             import numpy as np
             import sounddevice as sd
             import io, wave, speech_recognition as sr
-            from backend.voice.mic_selector import get_best_device
-            from backend.voice.stt import _downsample, TARGET_RATE
 
-            device_index, device_name, native_rate = get_best_device()
-            channels = 2 if native_rate == 48000 else 1
+            RATE = 16000
             DURATION = 1.5
-            n_samples = int(native_rate * DURATION)
 
-            rec_kwargs = dict(samplerate=native_rate, channels=channels, dtype="int16", blocking=True)
-            if device_index is not None:
-                rec_kwargs["device"] = device_index
-
-            audio_array = sd.rec(n_samples, **rec_kwargs)
-
-            # Phase 1: local VAD
-            amplitude = float(np.abs(audio_array).mean())
-            if amplitude < self.SPEECH_THRESHOLD:
-                time.sleep(0.05)
-                return False
-
-            logger.debug(f"[VOICE] Speech detected (amp={amplitude:.0f}), checking wake phrase...")
-
-            # Phase 2: downsample → STT
-            mono = _downsample(audio_array, native_rate, TARGET_RATE)
-            pcm = mono.astype("int16").tobytes()
+            audio_array = sd.rec(int(DURATION * RATE),
+                                 samplerate=RATE, channels=1,
+                                 dtype="int16", blocking=True)
 
             buf = io.BytesIO()
             with wave.open(buf, "wb") as wf:
                 wf.setnchannels(1)
                 wf.setsampwidth(2)
-                wf.setframerate(TARGET_RATE)
-                wf.writeframes(pcm)
+                wf.setframerate(RATE)
+                wf.writeframes(audio_array.tobytes())
             buf.seek(0)
 
             recognizer = sr.Recognizer()
@@ -88,7 +68,7 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
             except sr.UnknownValueError:
                 return False
             except sr.RequestError as exc:
-                logger.warning(f"[VOICE] STT request error: {exc}")
+                logger.warning(f"[VOICE] STT error: {exc}")
                 time.sleep(1.0)
                 return False
 
@@ -105,7 +85,7 @@ class FuzzyWakeWordDetector(BaseWakeWordDetector):
         score = len(wake_words & heard_words) / len(wake_words) if wake_words else 0
         matched = score >= 0.5
         if matched:
-            logger.info(f"[VOICE] Wake word detected! (score={score:.2f}, heard=\"{text}\")")
+            logger.info(f"[VOICE] Wake word detected! (heard=\"{text}\")")
         return matched
 
 
