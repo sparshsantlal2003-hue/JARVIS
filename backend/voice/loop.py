@@ -1,14 +1,9 @@
 ﻿"""
 Stage 5: VoiceLoop — the main conversational voice interaction loop.
-
-Wires together:
-  WakeWordDetector → SpeechRecognizer → Agent.chat() → TextToSpeech
-
-Uses the EXISTING Agent instance (no new agent is created).
-Conversation history is preserved across voice interactions.
 """
 import logging
 import time
+import sys
 from typing import TYPE_CHECKING
 
 from backend.voice.state_machine import VoiceStateMachine, VoiceState
@@ -23,16 +18,12 @@ if TYPE_CHECKING:
 logger = logging.getLogger("backend.voice.loop")
 
 
+def _print_status(msg: str):
+    """Print a timestamped voice status line to the terminal."""
+    print(f"[VOICE] {msg}", flush=True)
+
+
 class VoiceLoop:
-    """
-    Main voice interaction loop.
-
-    Usage:
-        agent = Agent()
-        loop = VoiceLoop(agent)
-        loop.run()
-    """
-
     def __init__(self, agent: "Agent"):
         self._agent = agent
         self._state_machine = VoiceStateMachine()
@@ -44,49 +35,39 @@ class VoiceLoop:
         self._wake_detector = create_wake_word_detector(self._stt)
         self._running = False
 
-    # ------------------------------------------------------------------
     def _speak(self, text: str):
-        """Speak and log."""
         logger.info(f"[TTS] \"{text}\"")
         self._state_machine.transition(VoiceState.SPEAKING)
-        self._tts.speak_and_wait(text)
+        try:
+            self._tts.speak_and_wait(text)
+        except Exception as exc:
+            logger.error(f"[TTS] Failed to speak response: {exc}")
 
-    # ------------------------------------------------------------------
-    def _listen_for_command(self) -> str | None:
-        """Record and transcribe the user's command."""
+    def _listen_for_command(self):
         self._state_machine.transition(VoiceState.LISTENING_FOR_COMMAND)
-        logger.info("[VOICE] Listening for command...")
+        _print_status("Listening for your command... (speak now)")
         text = self._stt.recognize()
         if text:
-            logger.info(f"[STT] \"{text}\"")
+            print(f"[STT] Heard: \"{text}\"", flush=True)
         return text
 
-    # ------------------------------------------------------------------
     def _process_command(self, command: str) -> str:
-        """Send the command to the JARVIS agent and get a response."""
         self._state_machine.transition(VoiceState.PROCESSING)
-        logger.info(f"[AGENT] Processing command: \"{command}\"")
+        _print_status(f"Processing: \"{command}\"")
         try:
             response = self._agent.chat(command)
             return response
         except Exception as exc:
-            logger.error(f"[AGENT] Error processing command: {exc}")
+            logger.error(f"[AGENT] Error: {exc}")
             return "I encountered an error. Please try again."
 
-    # ------------------------------------------------------------------
     def run(self):
-        """Main blocking loop. Press Ctrl+C to exit."""
         if not self._stt.is_available():
-            logger.error(
-                "[VOICE] STT unavailable (sounddevice or SpeechRecognition not installed). "
-                "Voice mode cannot start. Use text mode instead."
-            )
-            print("\n[VOICE] Voice mode is unavailable on this machine.")
-            print("[VOICE] Please use text mode: python -m backend.main --text\n")
+            _print_status("Voice mode unavailable — STT/mic not ready. Use text mode.")
             return
 
         if not self._tts.is_available():
-            logger.warning("[VOICE] TTS unavailable. JARVIS will not speak responses.")
+            _print_status("Warning: TTS unavailable. Responses will be text-only.")
 
         self._running = True
         self._wake_detector.start()
@@ -100,9 +81,8 @@ class VoiceLoop:
         try:
             while self._running:
                 self._state_machine.transition(VoiceState.LISTENING_FOR_WAKE_WORD)
-                logger.info("[VOICE] Listening for wake word...")
+                _print_status(f"Listening for wake word: \"{settings.wake_word}\" ...")
 
-                # ── WAKE WORD PHASE ───────────────────────────────────
                 wake_detected = False
                 try:
                     wake_detected = self._wake_detector.detect()
@@ -114,14 +94,12 @@ class VoiceLoop:
                     continue
 
                 if not wake_detected:
-                    continue  # Back to listening
+                    continue
 
-                # ── ACTIVATION ────────────────────────────────────────
                 self._state_machine.transition(VoiceState.WAKE_WORD_DETECTED)
-                logger.info("[VOICE] Wake word detected")
+                _print_status("Wake word detected!")
                 self._speak("Yes?")
 
-                # ── COMMAND PHASE ─────────────────────────────────────
                 command = None
                 try:
                     command = self._listen_for_command()
@@ -131,32 +109,27 @@ class VoiceLoop:
                     logger.warning(f"[VOICE] STT error: {exc}")
 
                 if not command:
+                    _print_status("Did not catch that. Returning to wake word.")
                     self._speak("Sorry, I didn't catch that.")
                     self._state_machine.transition(VoiceState.IDLE)
                     continue
 
-                # ── PROCESSING ────────────────────────────────────────
                 response = "I encountered an error. Please try again."
                 try:
                     response = self._process_command(command)
                 except KeyboardInterrupt:
                     raise
                 except Exception as exc:
-                    logger.error(f"[VOICE] Unexpected error during processing: {exc}")
+                    logger.error(f"[VOICE] Processing error: {exc}")
 
-                # ── SPEAK RESPONSE ────────────────────────────────────
-                try:
-                    self._speak(response)
-                except Exception as tts_exc:
-                    logger.error(f"[TTS] Failed to speak response: {tts_exc}")
+                _print_status(f"Response: \"{response[:80]}\"")
+                self._speak(response)
                 self._state_machine.transition(VoiceState.IDLE)
-                logger.info("[VOICE] Returning to wake-word detection.")
+                _print_status("Returning to wake-word detection.\n")
 
         except KeyboardInterrupt:
-            print("\n[VOICE] Voice mode stopped.")
+            print("\n[VOICE] Stopped.")
         finally:
             self._wake_detector.stop()
             self._tts.stop()
             self._running = False
-            logger.info("[VOICE] Voice loop shut down cleanly.")
-
