@@ -17,8 +17,13 @@ class ScreenAnalyzer:
         # but the prompt implies full screen or active monitor is generally expected for context.
         # Let's capture the active monitor's bounding box. For now, capture_screen handles it.
         # Passing bbox based on active window could clip important context if the window is small.
-        # So we just capture the primary screen.
-        image = capture.capture_screen()
+        # Capture strictly the active window to improve model coordinate accuracy
+        bbox = None
+        if active_win:
+            # bbox is (left, top, right, bottom)
+            bbox = (active_win['left'], active_win['top'], active_win['right'], active_win['bottom'])
+        
+        image = capture.capture_screen(bbox=bbox)
         return image, active_win
         
     def describe_screen(self) -> str:
@@ -88,9 +93,17 @@ class ScreenAnalyzer:
             # We must map these coordinates back to the global screen if necessary, 
             # but since we captured the primary screen (which starts at 0,0), they are absolute.
             
+            # Translate coordinates back to global absolute screen space
+            abs_x = data['x']
+            abs_y = data['y']
+            
+            if active_win:
+                abs_x += active_win['left']
+                abs_y += active_win['top']
+                
             return {
-                "x": data['x'],
-                "y": data['y'],
+                "x": abs_x,
+                "y": abs_y,
                 "confidence": data['confidence'],
                 "target": target,
                 "active_window": active_win['title'] if active_win else "Unknown"

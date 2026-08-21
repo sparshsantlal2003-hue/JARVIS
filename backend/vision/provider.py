@@ -17,6 +17,22 @@ class VisionProvider(ABC):
         pass
 
 class GeminiVisionProvider(VisionProvider):
+    def _optimize_image(self, image: Image.Image) -> Image.Image:
+        """Resizes and compresses the image for significantly faster API uploads."""
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+            
+        max_size = 1024
+        if max(image.size) > max_size:
+            image.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+            
+        # We save it to bytes with lower quality just to force compression
+        import io
+        buf = io.BytesIO()
+        image.save(buf, format="JPEG", quality=60, optimize=True)
+        buf.seek(0)
+        return Image.open(buf)
+
     def __init__(self):
         try:
             from google import genai
@@ -32,7 +48,7 @@ class GeminiVisionProvider(VisionProvider):
         # Initialize Gemini Client
         self.client = genai.Client(api_key=api_key)
         # We use flash as it's fast, free, and excellent at vision
-        self.model_name = "gemini-1.5-flash"
+        self.model_name = "gemini-flash-latest"
         logger.info(f"GeminiVisionProvider initialized with model: {self.model_name}")
 
     def analyze_screen(self, image: Image.Image, query: str) -> str:
@@ -40,7 +56,7 @@ class GeminiVisionProvider(VisionProvider):
         try:
             response = self.client.models.generate_content(
                 model=self.model_name,
-                contents=[prompt, image],
+                contents=[prompt, self._optimize_image(image)],
                 config={"temperature": 0.0}
             )
             return response.text.strip()
@@ -60,7 +76,7 @@ class GeminiVisionProvider(VisionProvider):
         try:
             response = self.client.models.generate_content(
                 model=self.model_name,
-                contents=[prompt, image],
+                contents=[prompt, self._optimize_image(image)],
                 config={
                     "temperature": 0.0,
                     "response_mime_type": "application/json"

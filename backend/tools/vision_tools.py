@@ -64,6 +64,19 @@ def visual_click(target: str) -> dict:
             if not click_res.get("success"):
                 return {"success": False, "error": f"Found element but failed to click: {click_res.get('error')}"}
                 
+            # Wait for UI to respond before verifying
+            import time
+            time.sleep(1.0)
+            
+            # Automatically verify if the click succeeded
+            verify_res = analyzer.verify_state(f"Did clicking '{target}' succeed or change the screen appropriately?")
+            if not verify_res:
+                logger.warning(f"Click on '{target}' completed but automatic verification failed.")
+                return {
+                    "success": False,
+                    "error": f"Clicked '{target}', but the screen state did not change as expected. The action might have failed."
+                }
+                
             return {
                 "success": True,
                 "action": "visual_click",
@@ -71,7 +84,8 @@ def visual_click(target: str) -> dict:
                 "confidence": confidence,
                 "x": x,
                 "y": y,
-                "active_window": element.get("active_window")
+                "active_window": element.get("active_window"),
+                "message": f"Successfully visually located and clicked '{target}', and verified the action."
             }
             
         logger.warning(f"Attempt {attempt+1}/{max_retries} to visually locate '{target}' failed.")
