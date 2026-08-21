@@ -1,4 +1,4 @@
-﻿"""
+"""
 Stage 5: WakeWordDetector — continuous rolling-buffer listener.
 
 Instead of fixed recording windows (which miss speech at window boundaries),

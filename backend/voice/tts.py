@@ -1,4 +1,4 @@
-﻿"""
+"""
 Stage 5: TextToSpeech — TTS abstraction using pyttsx3 (offline Windows SAPI5).
 
 - Speaks in a background thread so JARVIS does not block.

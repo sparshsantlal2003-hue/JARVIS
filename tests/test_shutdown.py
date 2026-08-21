@@ -1,4 +1,4 @@
-﻿"""
+"""
 Tests for the ShutdownManager and is_shutdown_command() detector.
 No real microphone, speakers, browser, or Windows GUI required.
 """

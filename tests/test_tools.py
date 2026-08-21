@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 import os
 import pathlib
 from unittest.mock import patch, MagicMock, mock_open

@@ -1,4 +1,4 @@
-﻿import time
+import time
 import subprocess
 from backend.logger import setup_logger
 from backend.tools.registry import registry

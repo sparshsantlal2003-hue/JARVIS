@@ -1,4 +1,4 @@
-﻿import pystray
+import pystray
 from PIL import Image
 import threading
 import sys

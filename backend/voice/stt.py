@@ -1,4 +1,4 @@
-﻿"""
+"""
 Stage 5: SpeechRecognizer — records until silence using sounddevice,
 then transcribes via Google Web Speech API.
 

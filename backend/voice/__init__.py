@@ -1,1 +1,1 @@
-﻿# Stage 5: Voice Interface package
+# Stage 5: Voice Interface package

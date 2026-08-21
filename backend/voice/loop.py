@@ -1,4 +1,4 @@
-﻿"""
+"""
 Stage 5: VoiceLoop — with graceful shutdown support.
 """
 import logging

@@ -1,4 +1,4 @@
-﻿from typing import List, Dict, Any
+from typing import List, Dict, Any
 from backend.provider import get_provider
 from backend.logger import setup_logger
 from backend.tools.registry import registry
@@ -26,6 +26,11 @@ class Agent:
                     response = self.provider.generate_response(self.history)
                 except Exception as e:
                     error_str = str(e)
+                    # Do NOT retry on authentication/API key errors!
+                    if "invalid_api_key" in error_str or "401" in error_str:
+                        logger.error(f"Authentication Error: {error_str}")
+                        return "JARVIS: Critical Error - My API key is invalid or missing. Please check your .env file."
+                        
                     if "tool_use_failed" in error_str or ("invalid_request_error" in error_str and "model_not_found" not in error_str):
                         logger.warning(f"AI generated malformed tool call. Prompting retry. Error: {error_str}")
                         self.history.append({

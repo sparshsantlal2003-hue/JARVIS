@@ -1,0 +1,78 @@
+2026-08-21 15:18:28,745 - backend.tools.registry - ERROR - Tool execution failed: launch_application() missing 1 required positional argument: 'application_name'
+2026-08-21 15:18:31,692 - backend.provider - ERROR - Error calling Groq: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:18:31,692 - backend.agent - ERROR - Agent encountered an error: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:18:52,499 - backend.tools.browser.browser_manager - ERROR - Browser connection error (EPIPE or disconnected). Make sure Brave is running with --remote-debugging-port=9222. Details: BrowserType.connect_over_cdp: connect ECONNREFUSED ::1:9222
+Call log:
+  - <ws preparing> retrieving websocket url from http://localhost:9222
+
+2026-08-21 15:18:52,545 - backend.tools.browser.search - ERROR - Search failed: Browser connection error (EPIPE or disconnected). Make sure Brave is running with --remote-debugging-port=9222. Details: BrowserType.connect_over_cdp: connect ECONNREFUSED ::1:9222
+Call log:
+  - <ws preparing> retrieving websocket url from http://localhost:9222
+
+2026-08-21 15:18:54,006 - backend.provider - ERROR - Error calling Groq: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:18:54,006 - backend.agent - ERROR - Agent encountered an error: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:36:08,674 - backend.provider - WARNING - Groq API key is missing or default. Please configure GROQ_API_KEY in .env.
+2026-08-21 15:36:09,019 - backend.provider - WARNING - Groq API key is missing or default. Please configure GROQ_API_KEY in .env.
+2026-08-21 15:36:32,110 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,110 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,159 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,159 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,208 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,208 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,266 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,266 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,314 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,315 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,376 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,376 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,437 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,438 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,485 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,486 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,544 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,544 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,593 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,593 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:32,594 - backend.agent - ERROR - Agent exceeded maximum tool execution loops.
+2026-08-21 15:36:55,040 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,040 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,089 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,089 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,137 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,138 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,184 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,184 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,235 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,236 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,284 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,285 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,331 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,331 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,380 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,380 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,427 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,427 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,476 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,476 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:36:55,476 - backend.agent - ERROR - Agent exceeded maximum tool execution loops.
+2026-08-21 15:37:45,133 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,133 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,191 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,191 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,246 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,246 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,303 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,304 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,368 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,368 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,424 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,424 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,480 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,481 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,534 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,535 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,593 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,594 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,653 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,654 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-08-21 15:37:45,654 - backend.agent - ERROR - Agent exceeded maximum tool execution loops.

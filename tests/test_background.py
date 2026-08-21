@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 from unittest.mock import patch, MagicMock
 
 from backend.startup import get_startup_command, install_startup, remove_startup, get_startup_status

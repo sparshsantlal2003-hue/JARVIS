@@ -1,4 +1,4 @@
-﻿import time
+import time
 from typing import Optional, Dict, List, Any
 from playwright.sync_api import sync_playwright, Browser, BrowserContext, Page, Playwright
 from backend.logger import setup_logger

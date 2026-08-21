@@ -1,4 +1,4 @@
-﻿"""
+"""
 Stage 5: VoiceInput — microphone abstraction layer.
 
 Wraps the SpeechRecognition library with graceful error handling so that

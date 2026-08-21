@@ -1,4 +1,4 @@
-﻿"""
+"""
 Stage 5: Voice State Machine.
 
 Explicit states for the voice interaction pipeline.

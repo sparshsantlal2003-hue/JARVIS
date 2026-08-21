@@ -1,4 +1,4 @@
-﻿"""
+"""
 ShutdownManager — deterministic, LLM-bypass shutdown for JARVIS.
 
 Responsibilities:

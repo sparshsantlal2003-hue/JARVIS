@@ -1,4 +1,4 @@
-﻿"""
+"""
 Stage 5 — Voice Interface Unit Tests
 
 All tests use mocks. No real microphone, speakers, or audio device required.
