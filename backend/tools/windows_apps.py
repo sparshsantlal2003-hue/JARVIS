@@ -25,7 +25,8 @@ APPLICATION_REGISTRY = {
     },
     "brave": {
         "executable": r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
-        "description": "Brave Browser"
+        "description": "Brave Browser",
+        "args": ["--remote-debugging-port=9222"]
     },
     "chrome": {
         "executable": r"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -147,8 +148,9 @@ def launch_application(application_name: str) -> dict:
     executable = app_info["executable"]
 
     try:
-        logger.info(f"Launching application: {resolved_key} ({executable})")
-        subprocess.Popen([executable], shell=False)
+        args = app_info.get("args", [])
+        logger.info(f"Launching application: {resolved_key} ({executable}) with args {args}")
+        subprocess.Popen([executable] + args, shell=False)
         time.sleep(1.5)
         return {
             "success": True,

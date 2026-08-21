@@ -314,7 +314,6 @@ class GroqProvider(AIProvider):
                 except Exception as e:
                     error_str = str(e)
                     if "429" in error_str and ("Rate limit" in error_str or "rate_limit_exceeded" in error_str):
-                        import re
                         match = re.search(r"Please try again in ([\d\.]+)s", error_str)
                         sleep_time = float(match.group(1)) if match else 5.0
                         sleep_time += 1.0 # Buffer
