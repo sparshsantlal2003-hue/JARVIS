@@ -135,7 +135,45 @@ if __name__ == "__main__":
 
     if args.background:
         run_voice(background=True)
-    elif args.voice:
+    el    if args.ai_status:
+        from backend.config import settings
+        import urllib.request
+        import json
+        
+        provider = getattr(settings, 'ai_provider', 'omniroute').upper()
+        base_url = getattr(settings, 'omniroute_base_url', 'http://localhost:20128/v1')
+        r_model = getattr(settings, 'omniroute_reasoning_model', 'gpt-oss-120b')
+        v_model = getattr(settings, 'omniroute_vision_model', 'gemini-flash-lite-latest')
+        
+        gateway_status = "Disconnected"
+        if provider == "OMNIROUTE":
+            try:
+                # Try to ping OmniRoute models endpoint
+                req = urllib.request.Request(f"{base_url}/models")
+                api_key = getattr(settings, 'omniroute_api_key', 'dummy')
+                req.add_header("Authorization", f"Bearer {api_key}")
+                with urllib.request.urlopen(req, timeout=5) as response:
+                    if response.status == 200:
+                        gateway_status = "Connected"
+            except Exception as e:
+                gateway_status = f"Error ({e})"
+        
+        print(f"\nJARVIS AI STATUS")
+        print(f"--------------------------------")
+        print(f"Gateway:          {provider}")
+        print(f"Gateway Status:   {gateway_status}")
+        print(f"\nReasoning:")
+        print(f"Provider:         {provider}")
+        print(f"Model:            {r_model}")
+        print(f"Status:           {'Ready' if gateway_status == 'Connected' else 'Unverified'}")
+        print(f"\nVision:")
+        print(f"Provider:         {provider}")
+        print(f"Model:            {v_model}")
+        print(f"Status:           {'Ready' if gateway_status == 'Connected' else 'Unverified'}")
+        print(f"--------------------------------\n")
+        return
+
+    if args.voice:
         run_voice(background=False)
     else:
         run_cli()

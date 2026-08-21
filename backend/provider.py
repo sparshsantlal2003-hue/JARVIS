@@ -194,6 +194,115 @@ class GeminiProvider(AIProvider):
                 logger.error(f"Error calling Gemini: {e}")
             raise
 
+class OmniRouteProvider(AIProvider):
+    def __init__(self):
+        try:
+            from groq import Groq
+        except ImportError:
+            logger.error("groq package not installed. Run 'pip install groq'.")
+            raise
+            
+        api_key = getattr(settings, 'omniroute_api_key', None)
+        base_url = getattr(settings, 'omniroute_base_url', 'http://localhost:20128/v1')
+        
+        if not api_key:
+            logger.warning("[AI ERROR] OMNIROUTE_API_KEY is not configured.")
+            
+        self.client = Groq(api_key=api_key if api_key else "dummy_key", base_url=base_url)
+        self.model_name = getattr(settings, 'omniroute_reasoning_model', 'gpt-oss-120b')
+        logger.info(f"[AI] Provider: OmniRoute | Route: reasoning | Model: {self.model_name} | Base URL: {base_url}")
+
+    def get_response(self, history: List[Dict[str, Any]]) -> Dict[str, Any]:
+        logger.info(f"[AI] Provider: OmniRoute | Route: reasoning | Request started")
+        
+        messages = []
+        if len(history) > 7:
+            processed_history = [history[0]]
+            last_explicit_user_msg = None
+            for msg in reversed(history[1:-6]):
+                if msg["role"] == "user" and "function_responses" not in msg and not (isinstance(msg.get("content"), str) and msg["content"].startswith("[Tool Result")):
+                    last_explicit_user_msg = msg
+                    break
+            if last_explicit_user_msg:
+                processed_history.append(last_explicit_user_msg)
+            processed_history.extend(history[-6:])
+        else:
+            processed_history = history
+
+        for msg in processed_history:
+            role = "user" if msg["role"] == "user" else "assistant"
+            if "function_calls" in msg:
+                for fc in msg["function_calls"]:
+                    messages.append({"role": "assistant", "content": f"[Tool Call Executed: {fc['name']} with args {fc['args']}]"})
+            if "function_responses" in msg:
+                for fr in msg["function_responses"]:
+                    import json
+                    try:
+                        res_str = json.dumps(fr['response'])
+                    except Exception:
+                        res_str = str(fr['response'])
+                    if len(res_str) > 3000:
+                        res_str = res_str[:3000] + "... [TRUNCATED]"
+                    messages.append({"role": "user", "content": f"[Tool Result for {fr['name']}: {res_str}]"})
+            if "content" in msg and msg["content"]:
+                messages.append({"role": role, "content": msg["content"]})
+        
+        try:
+            tools_list = registry.get_all_tools()
+            groq_tools = [function_to_json_schema(t) for t in tools_list] if tools_list else None
+            
+            import time
+            max_retries = getattr(settings, 'omniroute_max_retries', 2)
+            timeout = getattr(settings, 'omniroute_timeout', 60)
+            
+            for attempt in range(max_retries):
+                try:
+                    response = self.client.chat.completions.create(
+                        model=self.model_name,
+                        messages=messages,
+                        tools=groq_tools,
+                        tool_choice="auto" if groq_tools else "none",
+                        temperature=0.0,
+                        timeout=timeout
+                    )
+                    logger.info(f"[AI] Provider: OmniRoute | Route: reasoning | Response received")
+                    break
+                except Exception as e:
+                    error_str = str(e)
+                    if "429" in error_str or "rate limit" in error_str.lower():
+                        match = re.search(r"Please try again in ([\d\.]+)s", error_str)
+                        sleep_time = float(match.group(1)) if match else 5.0
+                        logger.warning(f"[AI] OmniRoute Rate limit hit. Retrying in {sleep_time:.2f}s... (Attempt {attempt+1}/{max_retries})")
+                        time.sleep(sleep_time)
+                        if attempt == max_retries - 1:
+                            fallback = getattr(settings, 'omniroute_reasoning_fallback', None)
+                            if fallback:
+                                logger.warning(f"Using fallback model {fallback}")
+                                self.model_name = fallback
+                                continue
+                            raise e
+                        continue
+                    raise e
+            
+            message = response.choices[0].message
+            
+            if message.tool_calls:
+                tc = message.tool_calls[0]
+                try:
+                    args = json.loads(tc.function.arguments) if tc.function.arguments else {}
+                    if args is None:
+                        args = {}
+                except Exception:
+                    args = {}
+                logger.info(f"[AI] Tool calls: 1 ({tc.function.name})")
+                return {"type": "function_call", "name": tc.function.name, "args": args}
+            else:
+                return {"type": "text", "content": message.content}
+                
+        except Exception as e:
+            logger.error(f"[AI] Error calling OmniRoute: {e}")
+            raise
+
 class GroqProvider(AIProvider):
     def __init__(self):
         try:
@@ -415,14 +524,17 @@ class GroqProvider(AIProvider):
             raise
 
 def get_provider() -> AIProvider:
-    if settings.ai_provider.lower() == "mock":
+    provider_name = getattr(settings, 'ai_provider', 'omniroute').lower()
+    if provider_name == "mock":
         return MockProvider()
-    elif settings.ai_provider.lower() == "gemini":
+    elif provider_name == "gemini":
         return GeminiProvider()
-    elif settings.ai_provider.lower() == "groq":
+    elif provider_name == "groq":
         return GroqProvider()
+    elif provider_name == "omniroute":
+        return OmniRouteProvider()
     else:
-        logger.warning(f"Unknown provider '{settings.ai_provider}', falling back to MockProvider.")
-        return MockProvider()
+        logger.warning(f"Unknown provider '{provider_name}', falling back to OmniRouteProvider.")
+        return OmniRouteProvider()
 
 
