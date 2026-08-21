@@ -74,6 +74,12 @@ class Agent:
                     
                     if isinstance(result, dict) and result.get("task_finished"):
                         return result.get("message", "Task completed.")
+                        
+                    # Typing is a terminal action - stop immediately after success
+                    # so the AI cannot loop back and type a second time.
+                    if tool_name == "system_type_text" and isinstance(result, dict) and result.get("success"):
+                        logger.info("[AGENT] system_type_text succeeded - returning Done immediately.")
+                        return "Done."
             
             # Last tool succeeded but AI kept looping — return terse confirmation
             if isinstance(last_tool_result, dict) and last_tool_result.get("success"):
@@ -87,6 +93,7 @@ class Agent:
             error_str = str(e)
             logger.error(f"Agent encountered an error: {e}")
             return f"An unexpected error occurred: {error_str.split('Details:')[0][:200]}..."
+
 
 
 

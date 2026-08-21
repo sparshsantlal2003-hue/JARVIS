@@ -298,34 +298,49 @@ class GroqProvider(AIProvider):
             tools_list = registry.get_all_tools()
             groq_tools = [function_to_json_schema(t) for t in tools_list] if tools_list else None
             
-            try:
-                response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=messages,
-                    tools=groq_tools,
-                    tool_choice="auto" if groq_tools else "none",
-                    temperature=0.0
-                )
-            except Exception as e:
-                error_str = str(e)
-                if "failed_generation" in error_str and "<function=" in error_str:
-                    match = re.search(r"<function=(\w+)(.*?)</function>", error_str)
-                    if match:
-                        tool_name = match.group(1)
-                        tool_args_str = match.group(2).strip()
-                        if tool_args_str.endswith(">"):
-                            tool_args_str = tool_args_str[:-1]
-                        try:
-                            tool_args = json.loads(tool_args_str)
-                            logger.info(f"Successfully rescued hallucinated tool call: {tool_name} with {tool_args}")
-                            return {
-                                "type": "function_call",
-                                "name": tool_name,
-                                "args": tool_args
-                            }
-                        except Exception as parse_e:
-                            logger.error(f"Could not rescue JSON: {parse_e}")
-                raise e
+            import time
+            max_retries = 4
+            for attempt in range(max_retries):
+                try:
+                    response = self.client.chat.completions.create(
+                        model=self.model_name,
+                        messages=messages,
+                        tools=groq_tools,
+                        tool_choice="auto" if groq_tools else "none",
+                        temperature=0.0
+                    )
+                    break
+                except Exception as e:
+                    error_str = str(e)
+                    if "429" in error_str and ("Rate limit" in error_str or "rate_limit_exceeded" in error_str):
+                        import re
+                        match = re.search(r"Please try again in ([\d\.]+)s", error_str)
+                        sleep_time = float(match.group(1)) if match else 5.0
+                        sleep_time += 1.0 # Buffer
+                        logger.warning(f"Groq Rate limit hit. Retrying in {sleep_time:.2f}s... (Attempt {attempt+1}/{max_retries})")
+                        time.sleep(sleep_time)
+                        if attempt == max_retries - 1:
+                            raise e
+                        continue
+                        
+                    if "failed_generation" in error_str and "<function=" in error_str:
+                        match = re.search(r"<function=(\w+)(.*?)</function>", error_str)
+                        if match:
+                            tool_name = match.group(1)
+                            tool_args_str = match.group(2).strip()
+                            if tool_args_str.endswith(">"):
+                                tool_args_str = tool_args_str[:-1]
+                            try:
+                                tool_args = json.loads(tool_args_str)
+                                logger.info(f"Successfully rescued hallucinated tool call: {tool_name} with {tool_args}")
+                                return {
+                                    "type": "function_call",
+                                    "name": tool_name,
+                                    "args": tool_args
+                                }
+                            except Exception as parse_e:
+                                logger.error(f"Could not rescue JSON: {parse_e}")
+                    raise e
             
             message = response.choices[0].message
             
