@@ -63,7 +63,7 @@ def _run_tray():
     _tray_icon.run()
 
 def start_tray(voice_loop=None):
-    \"\"\"Starts the system tray icon in a daemon thread.\"\"\"
+    """Starts the system tray icon in a daemon thread."""
     global _voice_loop
     _voice_loop = voice_loop
     tray_thread = threading.Thread(target=_run_tray, daemon=True)
