@@ -1,4 +1,4 @@
-﻿import winreg
+import winreg
 import sys
 import os
 from pathlib import Path
@@ -19,7 +19,8 @@ def get_startup_command() -> str:
     """Returns the command used to launch JARVIS in background mode at startup."""
     pythonw = get_pythonw_path()
     project_root = Path(__file__).parent.parent.absolute()
-    return f'"{pythonw}" -m backend.main --background'
+    run_script = project_root / 'run_jarvis.pyw'
+    return f'"{pythonw}" "{run_script}"'
 
 def install_startup():
     """Adds JARVIS to the Windows startup registry for the current user."""
