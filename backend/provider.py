@@ -13,6 +13,7 @@ from backend.logger import setup_logger
 from backend.tools.registry import registry
 import backend.tools.windows_apps  # Ensures tools are registered
 import backend.tools.browser       # Ensures browser tools are registered
+import backend.tools.vision_tools  # Ensures vision tools are registered
 
 logger = setup_logger(__name__)
 
@@ -64,7 +65,8 @@ class GeminiProvider(AIProvider):
             "BROWSER USAGE: When instructed to use the browser, you must sequence your tool calls correctly (e.g. search_web first, then read_page, then stop).\n" \
             "SEARCH INSTRUCTION: When the user asks to 'open the first result', DO NOT use click_element. You MUST read the 'url' from the search_web JSON results and use the navigate(url) tool to open it directly!\n" \
             "NOTEPAD INSTRUCTION: When the user asks you to type something in Notepad, you MUST first use keyboard_action('ctrl+n') to open a new tab in Notepad before typing. NEVER type into an existing saved file/tab. NEVER open Brave or any browser after completing a typing task unless the user explicitly requests it. After type_text() returns success, you MUST immediately output a final text reply (e.g. 'Done.') and stop calling any further tools.\n" \
-            "YOUTUBE INSTRUCTION: To play or pause a video, you MUST use keyboard_action('k'). NEVER use go_back or Space! If the user asks to search for something ON YouTube, DO NOT use search_web! You MUST use the navigate tool with the URL https://www.youtube.com/results?search_query=... directly!"
+            "YOUTUBE INSTRUCTION: To play or pause a video, you MUST use keyboard_action('k'). NEVER use go_back or Space! If the user asks to search for something ON YouTube, DO NOT use search_web! You MUST use the navigate tool with the URL https://www.youtube.com/results?search_query=... directly!\n" \
+            "VISION FALLBACK INSTRUCTION: Use deterministic tools (like launch_application, Playwright browser tools) FIRST. If deterministic tools fail, or if you need to verify an ambiguous visual state, use visual_click to click elements, describe_screen to see what's visible, and visual_verify to confirm if an action succeeded."
         )
         
         contents.append(types.Content(role="user", parts=[types.Part.from_text(text=strong_instruction)]))
@@ -235,7 +237,8 @@ class GroqProvider(AIProvider):
             "BROWSER USAGE: When instructed to use the browser, you must sequence your tool calls correctly (e.g. search_web first, then read_page, then stop).\n" \
             "SEARCH INSTRUCTION: When the user asks to 'open the first result', DO NOT use click_element. You MUST read the 'url' from the search_web JSON results and use the navigate(url) tool to open it directly!\n" \
             "NOTEPAD INSTRUCTION: When the user asks you to type something in Notepad, you MUST first use keyboard_action('ctrl+n') to open a new tab in Notepad before typing. NEVER type into an existing saved file/tab. NEVER open Brave or any browser after completing a typing task unless the user explicitly requests it. After type_text() returns success, you MUST immediately output a final text reply (e.g. 'Done.') and stop calling any further tools.\n" \
-            "YOUTUBE INSTRUCTION: To play or pause a video, you MUST use keyboard_action('k'). NEVER use go_back or Space! If the user asks to search for something ON YouTube, DO NOT use search_web! You MUST use the navigate tool with the URL https://www.youtube.com/results?search_query=... directly!"
+            "YOUTUBE INSTRUCTION: To play or pause a video, you MUST use keyboard_action('k'). NEVER use go_back or Space! If the user asks to search for something ON YouTube, DO NOT use search_web! You MUST use the navigate tool with the URL https://www.youtube.com/results?search_query=... directly!\n" \
+            "VISION FALLBACK INSTRUCTION: Use deterministic tools (like launch_application, Playwright browser tools) FIRST. If deterministic tools fail, or if you need to verify an ambiguous visual state, use visual_click to click elements, describe_screen to see what's visible, and visual_verify to confirm if an action succeeded."
         )
         
         messages.append({"role": "system", "content": strong_instruction})

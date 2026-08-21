@@ -76,3 +76,37 @@ Call log:
 2026-08-21 15:37:45,653 - backend.provider - ERROR - Error calling Groq: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
 2026-08-21 15:37:45,654 - backend.agent - WARNING - AI generated malformed tool call. Prompting retry. Error: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
 2026-08-21 15:37:45,654 - backend.agent - ERROR - Agent exceeded maximum tool execution loops.
+2026-08-21 15:47:40,494 - backend.tools.registry - ERROR - Tool execution failed: launch_application() missing 1 required positional argument: 'application_name'
+2026-08-21 15:47:44,583 - backend.tools.browser.browser_manager - ERROR - Browser connection error (EPIPE or disconnected). Make sure Brave is running with --remote-debugging-port=9222. Details: BrowserType.connect_over_cdp: connect ECONNREFUSED ::1:9222
+Call log:
+  - <ws preparing> retrieving websocket url from http://localhost:9222
+
+2026-08-21 15:48:30,717 - backend.tools.keyboard - WARNING - Using pyautogui global typing (HWND=262198, UWP=True).
+2026-08-21 15:49:00,067 - backend.tools.browser.browser_manager - ERROR - Browser connection error (EPIPE or disconnected). Make sure Brave is running with --remote-debugging-port=9222. Details: BrowserType.connect_over_cdp: connect ECONNREFUSED ::1:9222
+Call log:
+  - <ws preparing> retrieving websocket url from http://localhost:9222
+
+2026-08-21 15:49:33,963 - backend.tools.keyboard - WARNING - Using pyautogui global typing (HWND=591298, UWP=True).
+2026-08-21 15:49:57,277 - backend.tools.browser.browser_manager - ERROR - Browser connection error (EPIPE or disconnected). Make sure Brave is running with --remote-debugging-port=9222. Details: BrowserType.connect_over_cdp: connect ECONNREFUSED ::1:9222
+Call log:
+  - <ws preparing> retrieving websocket url from http://localhost:9222
+
+2026-08-21 15:50:31,068 - backend.tools.browser.browser_manager - ERROR - Browser connection error (EPIPE or disconnected). Make sure Brave is running with --remote-debugging-port=9222. Details: BrowserType.connect_over_cdp: connect ECONNREFUSED ::1:9222
+Call log:
+  - <ws preparing> retrieving websocket url from http://localhost:9222
+
+2026-08-21 15:50:31,105 - backend.tools.browser.navigation - ERROR - Navigation failed: Browser connection error (EPIPE or disconnected). Make sure Brave is running with --remote-debugging-port=9222. Details: BrowserType.connect_over_cdp: connect ECONNREFUSED ::1:9222
+Call log:
+  - <ws preparing> retrieving websocket url from http://localhost:9222
+
+2026-08-21 15:50:46,515 - backend.provider - ERROR - Error calling Groq: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:50:46,516 - backend.agent - ERROR - Agent encountered an error: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:51:19,295 - backend.provider - ERROR - Error calling Groq: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:51:19,296 - backend.agent - ERROR - Agent encountered an error: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:51:57,282 - backend.tools.windows_apps - ERROR - Executable not found for vscode: code
+2026-08-21 15:51:58,146 - backend.provider - ERROR - Error calling Groq: cannot access local variable 're' where it is not associated with a value
+2026-08-21 15:51:58,147 - backend.agent - ERROR - Agent encountered an error: cannot access local variable 're' where it is not associated with a value
+2026-08-21 16:02:03,769 - backend.tools.registry - ERROR - Tool execution failed: launch_application() missing 1 required positional argument: 'application_name'
+2026-08-21 16:02:30,546 - backend.tools.registry - ERROR - Tool execution failed: extract_links() got an unexpected keyword argument 'target'
+2026-08-21 16:03:28,732 - backend.tools.browser.browser_manager - ERROR - Browser connection error (EPIPE or disconnected). Make sure Brave is running with --remote-debugging-port=9222. Details: BrowserContext.new_page: Target page, context or browser has been closed
+2026-08-21 16:04:21,197 - backend.agent - WARNING - Prevented redundant tool call loop: launch_application:{'application_name': 'Brave'}
