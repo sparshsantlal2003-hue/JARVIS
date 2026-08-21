@@ -572,3 +572,42 @@ JARVIS will shut down cleanly — no ugly traceback.
 
 > Shutdown commands are detected **locally** before reaching the LLM,  
 > so no API token is consumed on exit.
+
+## Stage 6 — Persistent Background Assistant
+JARVIS can now act as a persistent Windows desktop assistant that runs quietly in the background, consuming minimal resources while waiting for your command.
+
+### New Features
+* **Background Mode:** Run without an interactive terminal window.
+* **System Tray:** A convenient UI in the Windows taskbar to Pause/Resume listening, check status, or restart JARVIS.
+* **Windows Startup Integration:** JARVIS can automatically launch when you sign into Windows (optional).
+* **Single Instance Protection:** Only one JARVIS can run at a time to prevent duplicate listening loops.
+
+### Usage
+
+**Check Status**
+`powershell
+python -m backend.main --status
+`
+
+**Run in Background**
+`powershell
+python -m backend.main --background
+`
+*This launches the system tray icon and background listener.*
+
+**Enable Windows Auto-Startup**
+`powershell
+python -m backend.main --install-startup
+`
+*JARVIS will automatically start in background mode the next time you sign into Windows.*
+
+**Check Auto-Startup Status**
+`powershell
+python -m backend.main --startup-status
+`
+
+**Remove Windows Auto-Startup**
+`powershell
+python -m backend.main --remove-startup
+`
+*This does not uninstall JARVIS, it simply removes the auto-startup trigger.*

@@ -34,6 +34,7 @@ class VoiceLoop:
         )
         self._wake_detector = create_wake_word_detector(self._stt)
         self._running = False
+        self.paused = False
 
     def _speak(self, text: str):
         logger.info(f"[TTS] \"{text}\"")
@@ -95,6 +96,10 @@ class VoiceLoop:
             while self._running and not shutdown_manager.is_shutdown_requested():
                 self._state_machine.transition(VoiceState.LISTENING_FOR_WAKE_WORD)
                 _print_status(f"Listening for wake word: \"{settings.wake_word}\" ...")
+
+                if self.paused:
+                    time.sleep(1.0)
+                    continue
 
                 wake_detected = False
                 try:

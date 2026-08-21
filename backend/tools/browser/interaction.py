@@ -59,8 +59,8 @@ def fill_field(target: str, text: str) -> dict:
         return {"success": False, "error": f"Failed to fill field '{target}': {str(e)}"}
 
 @registry.register(requires_confirmation=False, risk_level="LOW")
-def type_text(text: str) -> dict:
-    """Type text directly into the page (wherever focus currently is)."""
+def browser_type_text(text: str) -> dict:
+    """Type text directly into the web browser page (wherever focus currently is)."""
     try:
         page = browser_manager.get_active_page()
         if not page or page.is_closed():

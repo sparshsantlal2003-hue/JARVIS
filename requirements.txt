@@ -15,3 +15,12 @@ pyttsx3>=2.90               # TTS (offline Windows SAPI5, no API key)
 sounddevice>=0.4.6          # Microphone capture (Python 3.14 compatible)
 soundfile>=0.12.1           # Audio file I/O helper
 numpy>=1.24.0               # Array math for audio processing
+
+# Stage 6 - System Tray
+pystray>=0.19.4
+Pillow>=10.0.0
+
+# Stage 6 - System Tray
+pystray>=0.19.4
+Pillow>=10.0.0
+

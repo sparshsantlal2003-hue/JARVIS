@@ -1,0 +1,10 @@
+﻿name: Update README with JARVIS Status
+on:
+  push:
+    paths:
+      - '.github/jarvis_status.json'
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Status workflow placeholder"
